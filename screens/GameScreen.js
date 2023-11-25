@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Alert, FlatList, useWindowDimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 
@@ -26,6 +26,7 @@ const GameScreen = ({ userNumber, onGameOver }) => {
     const initialGuess = generateRandomBetween(1, 100, userNumber)
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
     const [guessRounds, setGuessRounds] = useState([initialGuess]);
+    const { width, height } = useWindowDimensions()
 
 
     useEffect(() => {
@@ -62,26 +63,53 @@ const GameScreen = ({ userNumber, onGameOver }) => {
 
     const guessRoundsListLength = guessRounds.length;
 
+    let content = (
+                <>
+                <NumberContainer> {currentGuess} </NumberContainer>
+                <Card>
+                  <InstructionText style={styles.instructionText}>Higher or lower?</InstructionText>
+                  <View style={styles.buttonsContainer}>
+                    <View style={styles.buttonContainer}>
+                      <PrimaryButton onPress={() => nextGuessHandler.bind('lower')}>
+                        <Ionicons  name='md-remove' size={24} color="white" />
+                      </PrimaryButton>
+                    </View>
+                    <View style={styles.buttonContainer}>
+                      <PrimaryButton onPress={() => nextGuessHandler('greater')}>
+                      <Ionicons  name='md-add' size={24} color="white" />
+                      </PrimaryButton>
+                    </View>
+                  </View>
+                </Card>
+                </>
+              )
+
+              if(width > 500) {
+                content = (
+                  <>
+                    <View style={styles.buttonsContainerWide}>
+                      <View style={styles.buttonContainer}>
+                        <PrimaryButton onPress={() => nextGuessHandler.bind('lower')}>
+                          <Ionicons  name='md-remove' size={24} color="white" />
+                        </PrimaryButton>
+                      </View>
+                      <NumberContainer> {currentGuess} </NumberContainer>
+                      <View style={styles.buttonContainer}>
+                        <PrimaryButton onPress={() => nextGuessHandler('greater')}>
+                        <Ionicons  name='md-add' size={24} color="white" />
+                        </PrimaryButton>
+                      </View>
+                    </View>
+                  
+
+                  </>
+                )
+              }
 
   return (
     <View style={styles.screen}>
         <Title>Oponent's Guess</Title>
-        <NumberContainer> {currentGuess} </NumberContainer>
-      <Card>
-        <InstructionText style={styles.instructionText}>Higher or lower?</InstructionText>
-        <View style={styles.buttonsContainer}>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={() => nextGuessHandler.bind('lower')}>
-              <Ionicons  name='md-remove' size={24} color="white" />
-            </PrimaryButton>
-          </View>
-          <View style={styles.buttonContainer}>
-            <PrimaryButton onPress={() => nextGuessHandler('greater')}>
-            <Ionicons  name='md-add' size={24} color="white" />
-            </PrimaryButton>
-          </View>
-        </View>
-      </Card>
+        {content}
       <View class={styles.listContainer}>
         {/* {guessRounds.map(guessRound => <Text key={guessRound}> {guessRound} </Text> )} */}
 
@@ -101,7 +129,8 @@ export default GameScreen
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        padding: 24
+        padding: 24,
+        alignItems: 'center'
     },
     instructionText: {
       marginBottom: 12
@@ -111,6 +140,10 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
       flex: 1,
+    },
+    buttonsContainerWide: {
+      flexDirection: 'row',
+      alignItems: 'center'
     },
     listContainer: {
       flex:1,
